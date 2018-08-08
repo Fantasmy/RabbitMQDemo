@@ -21,14 +21,14 @@ namespace SerialisationReceiver
         }
         private static void ReceiveSerialisationMessages(IModel model)
         {
-            model.BasicQos(0, 1, false);
+            model.BasicQos(0, 1, false);  // para temas de configuración y envío. La configuración más básica.
             QueueingBasicConsumer consumer = new QueueingBasicConsumer(model);
-            model.BasicConsume(CommonService.SerialisationQueueName, false, consumer);
-            while (true)
+            model.BasicConsume(CommonService.SerialisationQueueName, false, consumer);  // si cambias el false a true, el receptor estarái escuchando todo el rato
+            while (true)  // que se mantenga encendido mientras vayamos enviando
             {
-                BasicDeliverEventArgs deliveryArguments = consumer.Queue.Dequeue() as BasicDeliverEventArgs;
+                BasicDeliverEventArgs deliveryArguments = consumer.Queue.Dequeue() as BasicDeliverEventArgs;  //llama al Dequeue
                 String jsonified = Encoding.UTF8.GetString(deliveryArguments.Body);
-                Student student = JsonConvert.DeserializeObject<Student>(jsonified);
+                Student student = JsonConvert.DeserializeObject<Student>(jsonified);  // deserializa el alumno
                 Console.WriteLine("Pure json: {0}", jsonified);
                 Console.WriteLine("Student info- Name: {0} , Surname: {1} , Dni: {2}", student.Name, student.Surname, student.Dni);
                 model.BasicAck(deliveryArguments.DeliveryTag, false);
